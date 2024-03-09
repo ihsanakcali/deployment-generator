@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Deployment file generator</title>
+</head>
+<body>
+    <h1>Deployment file generator</h1>
+    <form action="/generate" method="post">
+        <div th:each="feature : ${features}">
+            <label th:text="${feature.name}"></label>
+            <input type="checkbox" th:value="${feature.id}" th:id="${feature.id}" name="selectedFeatures">
+        </div>
+        <button type="submit">Generate YAML</button>
+    </form>
+</body>
+</html>
