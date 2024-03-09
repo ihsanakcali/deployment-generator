@@ -2,14 +2,12 @@ package com.example.deploymentgenerator.model;
 
 public class Feature {
     private String name;
-    private String id;
+    private String displayName; // Add displayName property
 
-    public Feature(String name, String id) {
+    public Feature(String name, String displayName) {
         this.name = name;
-        this.id = id;
+        this.displayName = displayName;
     }
-
-    // Getters and setters
 
     public String getName() {
         return name;
@@ -19,11 +17,11 @@ public class Feature {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

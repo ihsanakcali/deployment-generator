@@ -2,16 +2,76 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Deployment file generator</title>
+    <title>Generate YAML</title>
 </head>
 <body>
-    <h1>Deployment file generator</h1>
-    <form action="/generate" method="post">
-        <div th:each="feature : ${features}">
-            <label th:text="${feature.name}"></label>
-            <input type="checkbox" th:value="${feature.id}" th:id="${feature.id}" name="selectedFeatures">
-        </div>
-        <button type="submit">Generate YAML</button>
-    </form>
+<h2>Select Features</h2>
+<form id="featureForm" action="/generate" method="post">
+    <label th:each="feature : ${features}">
+        <input type="checkbox" name="selectedFeatures" th:value="${feature.name}" th:text="${feature.displayName}" onchange="updateSelectedFeatures(this)"> <span th:text="${feature.displayName}"></span>
+    </label><br>
+    <div id="usernamePasswordTextboxes" style="display: none;"> <!-- Initially hidden -->
+        <label>Enter username: <input type="text" name="username"></label><br>
+        <label>Enter password: <input type="text" name="password"></label><br>
+    </div>
+    <input type="submit" value="Generate YAML">
+</form>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+function updateSelectedFeatures(checkbox) {
+    var selectedFeature = checkbox.value;
+    var usernamePasswordTextboxes = document.getElementById("usernamePasswordTextboxes");
+
+    if (selectedFeature === "feature1") {
+        if (checkbox.checked) {
+            usernamePasswordTextboxes.style.display = "block"; // Show textboxes for feature1
+        } else {
+            usernamePasswordTextboxes.style.display = "none"; // Hide textboxes if feature1 is not selected
+        }
+    }
+}
+
+function generateYaml() {
+    var selectedFeatures = [];
+    var checkboxes = document.getElementsByName("selectedFeatures");
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            selectedFeatures.push(checkboxes[i].value);
+        }
+    }
+
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+
+    // Make an AJAX call to the /generate endpoint with selectedFeatures, username, and password
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/generate", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.responseType = "blob";
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var blob = new Blob([xhr.response], { type: "application/x-yaml" });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "generated.yaml";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    };
+
+    var formData = "selectedFeatures=" + encodeURIComponent(selectedFeatures.join(",")) +
+                   "&username=" + encodeURIComponent(username) +
+                   "&password=" + encodeURIComponent(password);
+
+    xhr.send(formData);
+}
+
+/*]]>*/
+</script>
+
 </body>
 </html>
